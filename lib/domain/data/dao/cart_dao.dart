@@ -21,6 +21,51 @@ class CartDao extends DatabaseAccessor<AppDatabase> with _$CartDaoMixin {
     );
   }
 
+  Future<void> addOrIncrement(
+    int productId,
+    String title,
+    double price,
+    String image,
+  ) async {
+    try {
+      // Try to find the existing cart row for this product
+      final existing = await (select(
+        cartItems,
+      )..where((tbl) => tbl.productId.equals(productId))).getSingleOrNull();
+
+      if (existing != null) {
+        // ✅ If product exists → increment quantity
+        await (update(cartItems)..where((t) => t.id.equals(existing.id))).write(
+          CartItemsCompanion(quantity: Value(existing.quantity + 1)),
+        );
+      } else {
+        // ✅ If product doesn’t exist → insert new row
+        await into(cartItems).insert(
+          CartItemsCompanion.insert(
+            productId: productId,
+            title: title,
+            price: price,
+            image: image,
+          ),
+        );
+      }
+    } on Exception {
+      // ✅ In case of a unique constraint violation (e.g., race condition)
+      // fallback: just increment the first match
+      final existingList = await (select(
+        cartItems,
+      )..where((tbl) => tbl.productId.equals(productId))).get();
+      if (existingList.isNotEmpty) {
+        final existing = existingList.first;
+        await (update(cartItems)..where((t) => t.id.equals(existing.id))).write(
+          CartItemsCompanion(quantity: Value(existing.quantity + 1)),
+        );
+      } else {
+        rethrow; // let it bubble up if truly unexpected
+      }
+    }
+  }
+
   Future<int> remove(int id) =>
       (delete(cartItems)..where((t) => t.id.equals(id))).go();
 

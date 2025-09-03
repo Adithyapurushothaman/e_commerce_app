@@ -1,6 +1,8 @@
 import 'package:e_commerce_app/features/cart/provider/cart_provider.dart';
+import 'package:e_commerce_app/features/home/widget/item_added_to_cart_dialog.dart';
 import 'package:e_commerce_app/features/product/provider/product_provider.dart';
 import 'package:e_commerce_app/features/product/widgets/product_item.dart';
+import 'package:e_commerce_app/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,19 +15,20 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomeScreen> {
+  final cartKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     final productList = ref.watch(productListNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Mini Store"),
+        title: Text(S.of(context).appTitle),
         actions: [
           IconButton(
+            key: cartKey,
             icon: const Icon(Icons.shopping_cart_outlined),
-            onPressed: () {
-              context.push('/cart');
-            },
+            onPressed: () => context.push('/cart'),
           ),
         ],
       ),
@@ -49,22 +52,26 @@ class _HomePageState extends ConsumerState<HomeScreen> {
                 onTap: () {
                   context.push('/product/${product.id}');
                 },
-                trailing: FilledButton(
-                  onPressed: () {
-                    ref
-                        .read(cartNotifierProvider.notifier)
-                        .addToCart(
-                          product.id,
-                          product.title,
-                          product.price.toDouble(),
-                          product.image,
-                        );
-                    context.push('/cart');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("${product.title} added to cart")),
+                trailing: Builder(
+                  builder: (btnContext) {
+                    final addBtnKey = GlobalKey();
+
+                    return FilledButton(
+                      key: addBtnKey,
+                      onPressed: () async {
+                        ref
+                            .read(cartNotifierProvider.notifier)
+                            .addToCart(
+                              product.id,
+                              product.title,
+                              product.price.toDouble(),
+                              product.image,
+                            );
+                        await showItemAddedDialog(context, product.title);
+                      },
+                      child: Text(S.of(context).buttonAddToCart),
                     );
                   },
-                  child: const Text("Add to Cart"),
                 ),
               );
             },

@@ -1,4 +1,8 @@
+import 'package:e_commerce_app/core/utils/decrement_item_count.dart';
+import 'package:e_commerce_app/core/utils/dialog_utils.dart';
 import 'package:e_commerce_app/features/cart/provider/cart_provider.dart';
+import 'package:e_commerce_app/features/cart/widget/bill_section.dart';
+import 'package:e_commerce_app/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,17 +13,21 @@ class CartScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cartAsync = ref.watch(cartNotifierProvider);
 
+    final selectedItems = ref.watch(selectedCartItemsProvider);
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Your Cart")),
+      appBar: AppBar(title: Text(S.of(context).yourCartTitle)),
       body: cartAsync.when(
         data: (items) {
           if (items.isEmpty) {
-            return const Center(child: Text("Your cart is empty"));
+            return Center(child: Text(S.of(context).YourCartIsEmptyMessage));
           }
-          final total = items.fold<double>(
-            0,
-            (sum, item) => sum + item.price * item.quantity,
-          );
+
+          // ✅ calculate total only for selected items
+          final total = items
+              .where((item) => selectedItems.contains(item.id))
+              .fold<double>(0, (sum, item) => sum + item.price * item.quantity);
+
           return Column(
             children: [
               Expanded(
@@ -27,38 +35,113 @@ class CartScreen extends ConsumerWidget {
                   itemCount: items.length,
                   itemBuilder: (context, index) {
                     final item = items[index];
-                    return ListTile(
-                      leading: Image.network(item.image, width: 50, height: 50),
-                      title: Text(item.title),
-                      subtitle: Text("₹${item.price} x ${item.quantity}"),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          IconButton(
-                            icon: const Icon(Icons.remove),
-                            onPressed: () {
-                              if (item.quantity > 1) {
-                                ref
-                                    .read(cartNotifierProvider.notifier)
-                                    .updateQuantity(item.id, item.quantity - 1);
+                          // ✅ Checkbox
+                          Checkbox(
+                            value: selectedItems.contains(item.id),
+                            onChanged: (checked) {
+                              final notifier = ref.read(
+                                selectedCartItemsProvider.notifier,
+                              );
+                              if (checked == true) {
+                                notifier.state = {...notifier.state, item.id};
+                              } else {
+                                notifier.state = {...notifier.state}
+                                  ..remove(item.id);
                               }
                             },
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.add),
-                            onPressed: () {
-                              ref
-                                  .read(cartNotifierProvider.notifier)
-                                  .updateQuantity(item.id, item.quantity + 1);
-                            },
+
+                          // 🖼 Product image
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              item.image,
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              ref
-                                  .read(cartNotifierProvider.notifier)
-                                  .remove(item.id);
-                            },
+                          const SizedBox(width: 12),
+
+                          // 📄 Title + Price × Qty
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "₹${item.price} x ${item.quantity}",
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove),
+                                onPressed: () {
+                                  handleDecrementCartItem(
+                                    context,
+                                    ref,
+                                    itemId: item.id,
+                                    currentQty: item.quantity,
+                                    itemTitle: item.title,
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: () {
+                                  ref
+                                      .read(cartNotifierProvider.notifier)
+                                      .updateQuantity(
+                                        item.id,
+                                        item.quantity + 1,
+                                      );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () async {
+                                  final shouldRemove =
+                                      await showRemoveItemDialog(
+                                        context,
+                                        item.title,
+                                      );
+
+                                  if (shouldRemove) {
+                                    ref
+                                        .read(cartNotifierProvider.notifier)
+                                        .remove(item.id);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          "${item.title} removed from cart",
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -66,13 +149,8 @@ class CartScreen extends ConsumerWidget {
                   },
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  "Total: ₹$total",
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
+
+              CartBillSection(total: total, selectedItems: selectedItems),
             ],
           );
         },

@@ -16,14 +16,7 @@ class CartRepository {
     double price,
     String image,
   ) async {
-    await dao.add(
-      CartItemsCompanion.insert(
-        productId: productId,
-        title: title,
-        price: price,
-        image: image,
-      ),
-    );
+    await dao.addOrIncrement(productId, title, price, image);
     await _updateLastUpdated();
   }
 

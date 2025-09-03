@@ -14,6 +14,8 @@ CartRepository cartRepository(Ref ref) {
   return CartRepository(db.cartDao);
 }
 
+final selectedCartItemsProvider = StateProvider<Set<int>>((ref) => {});
+
 @riverpod
 class CartNotifier extends _$CartNotifier {
   @override

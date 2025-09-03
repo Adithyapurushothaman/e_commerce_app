@@ -1,6 +1,8 @@
 import 'package:e_commerce_app/core/models/products.dart';
 import 'package:e_commerce_app/features/cart/provider/cart_provider.dart';
+import 'package:e_commerce_app/features/home/widget/item_added_to_cart_dialog.dart';
 import 'package:e_commerce_app/features/product/provider/product_provider.dart';
+import 'package:e_commerce_app/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,7 +15,7 @@ class ProductDetailScreen extends ConsumerWidget {
     final productAsync = ref.watch(productByIdProvider(productId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Product Details")),
+      appBar: AppBar(title: Text(S.of(context).productTitle)),
       body: productAsync.when(
         data: (product) => _ProductDetailView(product: product),
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -63,7 +65,7 @@ class _ProductDetailView extends ConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: () {
+                    onPressed: () async {
                       ref
                           .read(cartNotifierProvider.notifier)
                           .addToCart(
@@ -72,12 +74,10 @@ class _ProductDetailView extends ConsumerWidget {
                             product.price.toDouble(),
                             product.image,
                           );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Added to cart")),
-                      );
+                      await showItemAddedDialog(context, product.title);
                     },
                     icon: const Icon(Icons.add_shopping_cart),
-                    label: const Text("Add to Cart"),
+                    label: Text(S.of(context).buttonAddToCart),
                   ),
                 ),
               ],
