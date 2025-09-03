@@ -118,3 +118,9 @@ Confetti – Improves UX with smooth animations when adding items.
 
 - for change the device theme for app theme change 
 - change the device Language to "Spanish" for Language change 
+
+- For adding new locale 
+ run Flutter Intl: Add Locale 
+
+ add the corresponding .arb file , then save it and run 
+ # dart run build_runner build  
