@@ -1,4 +1,5 @@
 import 'package:confetti/confetti.dart';
+import 'package:e_commerce_app/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,7 +12,7 @@ Future<void> showItemAddedDialog(BuildContext context, String itemName) async {
 
   await showDialog(
     context: context,
-    barrierDismissible: false, // user must press OK
+    barrierDismissible: false,
     builder: (_) {
       return Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -26,7 +27,7 @@ Future<void> showItemAddedDialog(BuildContext context, String itemName) async {
                   const Icon(Icons.check_circle, color: Colors.green, size: 48),
                   const SizedBox(height: 12),
                   Text(
-                    "$itemName added to cart!",
+                    S.of(context).itemAddedMessage,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
