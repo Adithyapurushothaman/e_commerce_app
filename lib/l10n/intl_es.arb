@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "@@locale": "es",
+
+  "appTitle": "Mini Carrito",
+  "itemAddedMessage": "Añadido al carrito",
+  "deleteItemMessage": "Artículo eliminado con éxito",
+  "yesMessage": "Sí",
+  "noMessage": "No",
+  "removeItemTitle": "Eliminar artículo",
+  "productTitle":"Lista de productos",
+  "yourCartTitle": "Tu carrito",
+  "yourCartIsEmptyMessage": "Tu carrito está vacío",
+  "deleteItemConfirmationMessage": "¿Está seguro de que desea eliminar este artículo del carrito?",
+
+  "errorGeneric": "Algo salió mal",
+
+  "buttonAddToCart": "Añadir al carrito"
+}

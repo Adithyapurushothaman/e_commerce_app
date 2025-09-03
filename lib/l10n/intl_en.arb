@@ -1,0 +1,25 @@
+{
+    "version": "1.0",
+    "@@locale": "en",
+  
+    "appTitle": "Mini Cart",
+    "itemAddedMessage": "Added to cart",
+    "deleteItemMessage": "Item Removed Successfully",
+    "yesMessage": "Yes",
+    "noMessage":"No",
+
+    "removeItemTitle":"Remove Item",
+    "productTitle":"Product List",
+    "yourCartTitle": "Your Cart",
+
+    "YourCartIsEmptyMessage": " Your Cart is Empty",
+    "deleteItemConfirmationMessage": "Are you sure you want to remove this item from the cart?",
+  
+  
+    "errorGeneric": "Something went wrong",
+
+    "buttonAddToCart": "Add To Cart"
+    
+    
+}
+  
