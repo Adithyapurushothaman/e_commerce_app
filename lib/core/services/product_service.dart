@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:e_commerce_app/core/models/products.dart';
+import 'package:e_commerce_app/domain/data/models/products.dart';
 
 class ProductService {
   final Dio _dio = Dio(BaseOptions(baseUrl: "https://fakestoreapi.com"));

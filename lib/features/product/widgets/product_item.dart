@@ -1,4 +1,4 @@
-import 'package:e_commerce_app/core/models/products.dart';
+import 'package:e_commerce_app/domain/data/models/products.dart';
 import 'package:flutter/material.dart';
 
 class ProductItem extends StatelessWidget {

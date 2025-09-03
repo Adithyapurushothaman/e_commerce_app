@@ -1,3 +1,4 @@
+import 'package:e_commerce_app/core/utils/cart_utils.dart';
 import 'package:e_commerce_app/core/utils/decrement_item_count.dart';
 import 'package:e_commerce_app/core/utils/dialog_utils.dart';
 import 'package:e_commerce_app/features/cart/provider/cart_provider.dart';
@@ -23,10 +24,8 @@ class CartScreen extends ConsumerWidget {
             return Center(child: Text(S.of(context).YourCartIsEmptyMessage));
           }
 
-          // ✅ calculate total only for selected items
-          final total = items
-              .where((item) => selectedItems.contains(item.id))
-              .fold<double>(0, (sum, item) => sum + item.price * item.quantity);
+          //calculate total of selected items
+          final total = calculateSelectedTotal(items, selectedItems);
 
           return Column(
             children: [

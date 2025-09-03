@@ -1,6 +1,6 @@
-import 'package:e_commerce_app/core/models/products.dart';
 import 'package:e_commerce_app/core/services/product_service.dart';
-import 'package:e_commerce_app/features/product/provider/product_repo.dart';
+import 'package:e_commerce_app/domain/data/models/products.dart';
+import 'package:e_commerce_app/features/product/product_repo.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

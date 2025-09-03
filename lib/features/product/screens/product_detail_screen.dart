@@ -1,4 +1,4 @@
-import 'package:e_commerce_app/core/models/products.dart';
+import 'package:e_commerce_app/domain/data/models/products.dart';
 import 'package:e_commerce_app/features/cart/provider/cart_provider.dart';
 import 'package:e_commerce_app/features/home/widget/item_added_to_cart_dialog.dart';
 import 'package:e_commerce_app/features/product/provider/product_provider.dart';
