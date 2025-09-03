@@ -1,5 +1,5 @@
-import 'package:e_commerce_app/core/models/products.dart';
 import 'package:e_commerce_app/core/services/product_service.dart';
+import 'package:e_commerce_app/domain/data/models/products.dart';
 
 abstract class ProductRepository {
   Future<List<Product>> getProducts();
